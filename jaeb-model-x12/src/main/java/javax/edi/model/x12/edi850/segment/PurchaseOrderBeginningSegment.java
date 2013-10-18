@@ -1,3 +1,4 @@
+
 package javax.edi.model.x12.edi850.segment;
 
 import java.util.Date;
@@ -23,13 +24,13 @@ public class PurchaseOrderBeginningSegment {
 	private String purchaseOrderTypeCode; // 'NE = New Order, 'OS' = Will Call Order
 
 	@EDIElement(fieldName="BEG03",dataElement="324")
-	@Size(min = 1, max = 30)
-	private String releaseNumber;
-	
-	@EDIElement(fieldName="BEG04",dataElement="328")
 	@NotNull
 	@Size(min = 1, max = 22)
 	private String purchaseOrderNumber;
+    
+        @EDIElement(fieldName="BEG04",dataElement="328")
+	@Size(min = 1, max = 30)
+	private String releaseNumber;	
 	
 	@EDIElement(fieldName="BEG05",dataElement="373")
 	@NotNull
