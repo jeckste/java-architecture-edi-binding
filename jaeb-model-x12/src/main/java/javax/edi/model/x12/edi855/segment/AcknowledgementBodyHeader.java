@@ -11,7 +11,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @EDISegmentGroup
-public class Header implements javax.edi.model.x12.Header {
+public class AcknowledgementBodyHeader implements javax.edi.model.x12.Header {
 
 	@NotNull
 	@Valid

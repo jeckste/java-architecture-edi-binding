@@ -8,7 +8,7 @@ import javax.validation.Valid;
 public class POAcknowledgementBody implements X12Body {
 
 	@Valid
-	private Header header;
+	private AcknowledgementBodyHeader acknowledgementBodyHeader;
 	
 	@Valid
 	private Detail detail;
@@ -16,11 +16,11 @@ public class POAcknowledgementBody implements X12Body {
 	@Valid
 	private Trailer footer;
 	
-	public Header getHeader() {
-		return header;
+	public AcknowledgementBodyHeader getAcknowledgementBodyHeader() {
+		return acknowledgementBodyHeader;
 	}
-	public void setHeader(Header header) {
-		this.header = header;
+	public void setAcknowledgementBodyHeader(AcknowledgementBodyHeader acknowledgementBodyHeader) {
+		this.acknowledgementBodyHeader = acknowledgementBodyHeader;
 	}
 	public Detail getDetail() {
 		return detail;
@@ -34,4 +34,8 @@ public class POAcknowledgementBody implements X12Body {
 	public void setFooter(Trailer footer) {
 		this.footer = footer;
 	}
+
+    public AcknowledgementBodyHeader getHeader() {
+        return this.acknowledgementBodyHeader;
+    }
 }
