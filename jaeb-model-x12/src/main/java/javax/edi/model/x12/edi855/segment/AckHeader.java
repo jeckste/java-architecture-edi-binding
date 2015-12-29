@@ -1,17 +1,19 @@
 package javax.edi.model.x12.edi855.segment;
 
 import java.util.Collection;
+
 import javax.edi.bind.annotations.EDICollectionType;
 import javax.edi.bind.annotations.EDISegmentGroup;
-import javax.edi.model.x12.segment.LineItemAcknowledgement;
+import javax.edi.model.x12.edi810.segment.InvoiceAddressGroup;
+import javax.edi.model.x12.segment.PersonContact;
 import javax.edi.model.x12.segment.ReferenceIdentification;
-import javax.edi.model.x12.segment.ReferenceNumber;
 import javax.edi.model.x12.segment.TransactionSetHeader;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @EDISegmentGroup
-public class Header implements javax.edi.model.x12.Header {
+public class AckHeader implements javax.edi.model.x12.Header {
 
 	@NotNull
 	@Valid
@@ -21,8 +23,14 @@ public class Header implements javax.edi.model.x12.Header {
 	@Valid
 	private POAcknowledgementBeginningSegment beginningSegment;
         
-        @EDICollectionType(ReferenceIdentification.class)
-        private Collection<ReferenceIdentification> referenceIdentification;
+    private PersonContact personContact;
+    
+    @EDICollectionType(ReferenceIdentification.class)
+    private Collection<ReferenceIdentification> referenceIdentification;
+    
+    @EDICollectionType(InvoiceAddressGroup.class)
+	@Size(min=0, max=200)
+	private Collection<InvoiceAddressGroup> addressInformation;
 
 	public TransactionSetHeader getTransactionSetHeader() {
 		return transactionSetHeader;
@@ -54,6 +62,28 @@ public class Header implements javax.edi.model.x12.Header {
     public void setReferenceIdentification(Collection<ReferenceIdentification> referenceIdentification) {
         this.referenceIdentification = referenceIdentification;
     }
+
+    /**
+     * @return the personContact
+     */
+    public PersonContact getPersonContact() {
+        return personContact;
+    }
+
+    /**
+     * @param personContact the personContact to set
+     */
+    public void setPersonContact(PersonContact personContact) {
+        this.personContact = personContact;
+    }
+
+	public Collection<InvoiceAddressGroup> getAddressInformation() {
+		return addressInformation;
+	}
+
+	public void setAddressInformation(Collection<InvoiceAddressGroup> addressInformation) {
+		this.addressInformation = addressInformation;
+	}
 	
 	
 }

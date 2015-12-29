@@ -22,10 +22,8 @@ public class OrgRelationshipsGroupParent {
         @EDICollectionType(OrgRelationshipsIdentificationGroup.class)
         private Collection<OrgRelationshipsIdentificationGroup> orgRelationshipsIdentificationGroup;
         
-        @Size(min=1)
-        @NotNull
-        @EDICollectionType(OrgRelationshipsGroupChild.class)
-        private Collection<OrgRelationshipsGroupChild> orgRelChild;
+        @EDICollectionType(OrgRelationshipsGroupParent.class)
+        private Collection<OrgRelationshipsGroupParent> orgRelChild;
 
         public HierarchicalLevel getLevel() {
                 return level;
@@ -44,13 +42,19 @@ public class OrgRelationshipsGroupParent {
                 this.orgRelationshipsIdentificationGroup = orgRelationshipsIdentificationGroup;
         }
 
-        public Collection<OrgRelationshipsGroupChild> getOrgRelChild() {
-                return orgRelChild;
-        }
+    /**
+     * @return the orgRelChild
+     */
+    public Collection<OrgRelationshipsGroupParent> getOrgRelChild() {
+        return orgRelChild;
+    }
 
-        public void setOrgRelChild(Collection<OrgRelationshipsGroupChild> orgRelChild) {
-                this.orgRelChild = orgRelChild;
-        }
+    /**
+     * @param orgRelChild the orgRelChild to set
+     */
+    public void setOrgRelChild(Collection<OrgRelationshipsGroupParent> orgRelChild) {
+        this.orgRelChild = orgRelChild;
+    }
 
 
 

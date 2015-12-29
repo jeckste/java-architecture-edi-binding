@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @EDISegmentGroup
-public class Header implements javax.edi.model.x12.v5010.Header {
+public class OrderBodyHeader implements javax.edi.model.x12.v5010.Header {
 
 	@NotNull
 	private TransactionSetHeader transactionSetHeader;

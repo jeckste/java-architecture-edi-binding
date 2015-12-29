@@ -1,6 +1,7 @@
 package javax.edi.model.x12.edi855.segment;
 
 import javax.edi.bind.annotations.EDISegmentGroup;
+import javax.edi.model.x12.Header;
 import javax.edi.model.x12.X12Body;
 import javax.validation.Valid;
 
@@ -8,7 +9,7 @@ import javax.validation.Valid;
 public class POAcknowledgementBody implements X12Body {
 
 	@Valid
-	private Header header;
+	private AckHeader ackHeader;
 	
 	@Valid
 	private Detail detail;
@@ -16,11 +17,11 @@ public class POAcknowledgementBody implements X12Body {
 	@Valid
 	private Trailer footer;
 	
-	public Header getHeader() {
-		return header;
+	public AckHeader getAckHeader() {
+		return ackHeader;
 	}
-	public void setHeader(Header header) {
-		this.header = header;
+	public void setAckHeader(AckHeader ackHeader) {
+		this.ackHeader = ackHeader;
 	}
 	public Detail getDetail() {
 		return detail;
@@ -33,5 +34,10 @@ public class POAcknowledgementBody implements X12Body {
 	}
 	public void setFooter(Trailer footer) {
 		this.footer = footer;
+	}
+        
+        //Interface header used to avoid reflection issues
+        public Header getHeader() {
+		return ackHeader;
 	}
 }

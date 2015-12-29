@@ -3,11 +3,14 @@ package javax.edi.bind;
 import java.io.Reader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
@@ -32,6 +35,36 @@ import org.slf4j.LoggerFactory;
 public class EDIUnmarshaller {
 	private static final Logger LOG = LoggerFactory
 			.getLogger(EDIUnmarshaller.class);
+
+    private static boolean startOfNewRecursiveObject(ListIterator<Field> fieldIterator, List<Field> fieldsList, Class<?> segmentGroupClass) {
+            Field nextField = fieldsList.get(fieldIterator.nextIndex());
+            if (nextField.getType().equals(segmentGroupClass)){
+                return true;
+            }
+            if(Collection.class.isAssignableFrom(nextField.getType())){
+                final ParameterizedType genericType = (ParameterizedType) nextField.getGenericType();
+                Type collectionType = genericType.getActualTypeArguments()[0];
+                return segmentGroupClass.equals(collectionType);
+            }
+            return false;
+    }
+
+    private static boolean isHeirarchicalLevelAndNotSameLevel(String[] lineList, String[] nextLineList) {
+        return lineList[0].equals(nextLineList[0]) && nextLineList[0].equals("HL") && !lineList[3].equals( nextLineList[3] );
+    }
+    
+    private static boolean isDeeperHeirarchicalLevel(String[] lineList, String[] nextLineList) {
+        if(lineList[0].equals(nextLineList[0]) && nextLineList[0].equals("HL")){
+            try{
+                Integer thisLevel = Integer.parseInt(lineList[3]);
+                Integer nextLineLevel = Integer.parseInt(nextLineList[3]);
+                return nextLineLevel > thisLevel;
+            } catch (NumberFormatException e) {
+                    return false;
+            }
+        }
+        return false;
+    }
 
 	private EDIUnmarshaller() {
 		// seal
@@ -134,11 +167,20 @@ public class EDIUnmarshaller {
 				LOG.debug("Looping to collect Collection of Segment Groups");
 				// parse the group...
 				Field[] fields = segmentGroupClass.getDeclaredFields();
-				Iterator<Field> fieldIterator = Arrays.asList(fields).iterator();
+                                final List<Field> fieldsList = Arrays.asList(fields);
+				ListIterator<Field> fieldIterator = fieldsList.listIterator(0);
 
 				Object collectionObj = segmentGroupClass.newInstance();
 				while (fieldIterator.hasNext() && (segmentIterator.hasNext() || lookAhead.size() > 0)) {
-					parseEDISegmentOrSegmentGroup(ediMessage, collectionObj, fieldIterator, lookAhead, segmentIterator);
+                                    if(startOfNewRecursiveObject(fieldIterator, fieldsList, segmentGroupClass)){
+                                        String next = lookAhead.size() > 0 ? lookAhead.remove() : segmentIterator.next();
+                                        lookAhead.add(next);
+                                        if( !isSegmentHeirarchicalLevelAndDeeperLevel(line, next, Character.toString( ediMessage.elementDelimiter() )) ){
+                                            LOG.debug("Reaching new instance of list.");
+                                            break;
+                                        }
+                                    }
+                                        parseEDISegmentOrSegmentGroup(ediMessage, collectionObj, fieldIterator, lookAhead, segmentIterator);
 				}
 
 				obj.add(collectionObj);
@@ -155,9 +197,9 @@ public class EDIUnmarshaller {
 						lookAhead.add(nextLine);
 						break;
 					}
-					LOG.debug("Might be a repeat..");
-					LOG.debug("Next line: " + line);
-					lookAhead.add(nextLine);
+                                        LOG.debug("Might be a repeat..");
+                                        LOG.debug("Next line: " + line);
+                                        lookAhead.add(nextLine);
 				} else {
 					lookAhead.add(nextLine);
 					break;
@@ -454,7 +496,7 @@ public class EDIUnmarshaller {
 		}
 		String[] nextLineList = line2.split( regex );
 		String[] lineList = line1.split( regex );
-		if( lineList[0].equals(nextLineList[0]) && nextLineList[0].equals("HL") && !lineList[3].equals( nextLineList[3] )) {
+		if( isHeirarchicalLevelAndNotSameLevel(lineList, nextLineList)) {
 			return false;
 		}
 		if(lineList[0].equals(nextLineList[0])) {
@@ -462,5 +504,25 @@ public class EDIUnmarshaller {
 		}
 		return false;
 	}
+        
+        protected static boolean isSegmentHeirarchicalLevelAndNotSameLevel(String line1, String line2, String delimiter) {
+		String regex = delimiter;
+		if(delimiter.equals("*")) {
+			regex = "\\*";
+		}
+		String[] nextLineList = line2.split( regex );
+		String[] lineList = line1.split( regex );
+                return isHeirarchicalLevelAndNotSameLevel(lineList, nextLineList);
+        }
+        
+        protected static boolean isSegmentHeirarchicalLevelAndDeeperLevel(String line1, String line2, String delimiter) {
+		String regex = delimiter;
+		if(delimiter.equals("*")) {
+			regex = "\\*";
+		}
+		String[] nextLineList = line2.split( regex );
+		String[] lineList = line1.split( regex );
+                return isDeeperHeirarchicalLevel(lineList, nextLineList);
+        }
 
 }

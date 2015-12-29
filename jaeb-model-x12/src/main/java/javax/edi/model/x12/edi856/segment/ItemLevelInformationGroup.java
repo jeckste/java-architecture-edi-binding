@@ -5,6 +5,7 @@ import javax.edi.model.x12.segment.HierarchicalLevel;
 import javax.edi.model.x12.segment.ItemIdentification;
 import javax.edi.model.x12.segment.ProductItemDescription;
 import javax.edi.model.x12.segment.ShipmentItemDetail;
+import javax.edi.model.x12.segment.TransactionSetTotals;
 
 @EDISegmentGroup
 public class ItemLevelInformationGroup {
@@ -13,6 +14,9 @@ public class ItemLevelInformationGroup {
 	private ItemIdentification itemIdentification;
 	private ShipmentItemDetail shipmentItemDetail;
 	private ProductItemDescription productItemDescription;
+        // Not correct placement, but it is a workaround since the parser is 
+        // breaking if this field is optional and on the footer.
+        private TransactionSetTotals transactionSetTotals;
 	
 	public HierarchicalLevel getItemLevel() {
 		return itemLevel;
@@ -42,6 +46,20 @@ public class ItemLevelInformationGroup {
 	public void setProductItemDescription(ProductItemDescription productItemDescription) {
 		this.productItemDescription = productItemDescription;
 	}
+
+    /**
+     * @return the transactionSetTotals
+     */
+    public TransactionSetTotals getTransactionSetTotals() {
+        return transactionSetTotals;
+    }
+
+    /**
+     * @param transactionSetTotals the transactionSetTotals to set
+     */
+    public void setTransactionSetTotals(TransactionSetTotals transactionSetTotals) {
+        this.transactionSetTotals = transactionSetTotals;
+    }
 	
 	
 }
